@@ -4,7 +4,7 @@ from actions.base import ActionConfig, ActionConnector
 from actions.face.interface import FaceInput
 
 
-class FaceRos2Connector(ActionConnector[FaceInput]):
+class FaceRos2Connector(ActionConnector[FaceInput, None]):
 
     def __init__(self, config: ActionConfig):
         super().__init__(config)

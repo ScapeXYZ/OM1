@@ -29,9 +29,9 @@
       "llm_label": "speak",
       "connector": "elevenlabs_tts",
       "config": {
-        "voice_id": "i4CzbCVWoqvD0P1QJCUL",
+        "voice_id": "SgG3x729SgH346SJc0ck",
         "silence_rate": 20,
-        "player": "ffplay -nodisp -autoexit -loglevel quiet"
+        "player": "ffplay -nodisp -autoexit"
       }
     }
   ]

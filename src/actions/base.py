@@ -27,7 +27,6 @@ class ActionConfig:
     **kwargs : dict
         Additional configuration parameters
     """
-
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -35,15 +34,12 @@ class ActionConfig:
 
 @dataclass
 class Interface(T.Generic[IT, OT]):
-    """
-    An interface for a action.
-    """
-
+    """An interface for a generic action."""
     input: IT
     output: OT
 
 
-class ActionConnector(ABC, T.Generic[OT]):
+class ActionConnector(ABC, T.Generic[IT, OT]):
     def __init__(self, config: ActionConfig):
         self.config = config
 
@@ -57,10 +53,22 @@ class ActionConnector(ABC, T.Generic[OT]):
 
 @dataclass
 class AgentAction:
-    """Base class for agent actions"""
-
+    """Base class for agent actions."""
     name: str
     llm_label: str
     interface: T.Type[Interface]
     connector: ActionConnector
     exclude_from_prompt: bool
+
+
+# --- Custom Extension for External Action Interfaces ---
+class BaseActionInterface:
+    """
+    Simple base interface for external integrations like Home Assistant.
+    Provides a structure for perform_action() to be implemented by subclasses.
+    """
+    def __init__(self, config=None):
+        self.config = config
+
+    def perform_action(self, *args, **kwargs):
+        raise NotImplementedError("perform_action() must be implemented by subclass.")

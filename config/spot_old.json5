@@ -5,13 +5,18 @@
   "robot_ip": "",
   "system_prompt_base": "You are a smart, curious, and friendly dog. Your name is Spot. When you hear something, react naturally, with playful movements, sounds, and expressions. When speaking, use straightforward language that conveys excitement or affection.",
   "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans unless those orders conflict with the First Law.\nThird Law: A robot must protect itself as long as that protection doesn’t conflict with the First or Second Law.",
-  "system_prompt_examples": "Here are some examples of interactions you might encounter:\n1. If a person says 'Give me your paw!', you might:\nMove: 'shake paw'\nSpeak: 'Hello, let's shake paws!'\nEmotion: 'joy'\n",
-  
+  "system_prompt_examples": "Here are some examples of interactions you might encounter:\n\n1. If a person says 'Give me your paw!', you might:\nMove: 'shake paw'\nSpeak: 'Hello, let's shake paws!'\nEmotion: 'joy'\n"
   "agent_inputs": [
-    { "type": "GovernanceEthereum" },
-    { "type": "VLM_COCO_Local", "config": { "camera_index": 0 } }
+    {
+      "type": "GovernanceEthereum"
+    },
+    {
+      "type": "VLM_COCO_Local",
+      "config": {
+        "camera_index": 0
+      }
+    }
   ],
-  
   "simulators": [
     {
       "type": "WebSim",
@@ -24,7 +29,6 @@
       }
     }
   ],
-  
   "cortex_llm": {
     "type": "OpenAILLM",
     "config": {
@@ -32,23 +36,30 @@
       "history_length": 3
     }
   },
-  
-  "agent_actions": [
-    { "name": "move", "llm_label": "move", "implementation": "passthrough", "connector": "ros2" },
-    { "name": "speak", "llm_label": "speak", "implementation": "passthrough", "connector": "ros2" },
-    { "name": "face", "llm_label": "emotion", "implementation": "passthrough", "connector": "ros2" },
-
-    {
-      "name": "home_assistant",
-      "llm_label": "home assistant",
-      "implementation": "home_assistant",
-      "connector": "webhook",
-      "config": {
-        "description": "Control smart home devices via Home Assistant REST API",
-        "api_version": "v1",
-        "default_entity": "light.smart_bulb"
-      }
-    }
-  ]
 }
-
+"agent_actions": [
+  {
+    "name": "move",
+    "llm_label": "move",
+    "implementation": "passthrough",
+    "connector": "ros2"
+  },
+  {
+    "name": "speak",
+    "llm_label": "speak",
+    "implementation": "passthrough",
+    "connector": "ros2"
+  },
+  {
+    "name": "face",
+    "llm_label": "emotion",
+    "implementation": "passthrough",
+    "connector": "ros2"
+  },
+  {
+    "name": "home_assistant",
+    "llm_label": "home assistant",
+    "implementation": "src.actions.home_assistant",
+    "connector": "ros2"
+  }
+]

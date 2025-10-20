@@ -1,8 +1,16 @@
+import os
+import sys
+
+# ✅ Ensure the 'src' directory is always in the Python path
+sys.path.append(os.path.dirname(__file__))
+
 import asyncio
 import multiprocessing as mp
-
-import dotenv
 import typer
+import dotenv  # ✅ Import dotenv early
+
+# ✅ Load the .env file immediately
+dotenv.load_dotenv()
 
 from runtime.config import load_config
 from runtime.cortex import CortexRuntime
@@ -24,10 +32,8 @@ def start(config_name: str, log_level: str = "INFO", log_to_file: bool = False) 
 
 
 if __name__ == "__main__":
-
     # Fix for Linux multiprocessing
     if mp.get_start_method(allow_none=True) != "spawn":
         mp.set_start_method("spawn")
 
-    dotenv.load_dotenv()
     app()

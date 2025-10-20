@@ -4,7 +4,7 @@ from actions.base import ActionConfig, ActionConnector
 from actions.speak.interface import SpeakInput
 
 
-class SpeakRos2Connector(ActionConnector[SpeakInput]):
+class SpeakRos2Connector(ActionConnector[SpeakInput, None]):
 
     def __init__(self, config: ActionConfig):
         super().__init__(config)
