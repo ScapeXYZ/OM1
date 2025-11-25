@@ -6,9 +6,9 @@ from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union
 
 import openai
 
-from llm import LLMConfig
-
+from llm.base import LLM, LLMConfig
 from .io_provider import IOProvider
+
 
 R = TypeVar("R")
 
@@ -21,7 +21,7 @@ class ChatMessage:
 
 ACTION_MAP = {
     "emotion": "**** felt: {}.",
-    "speak": "**** said: {}",
+    "speak": "**** said: {}.",
     "move": "**** performed this motion: {}.",
 }
 
@@ -30,29 +30,30 @@ class LLMHistoryManager:
     def __init__(
         self,
         config: LLMConfig,
-        client: Union[openai.AsyncClient, openai.OpenAI],
-        system_prompt: str = "You are a helpful assistant that summarizes a succession of events and interactions accurately and concisely. You are watching a robot named **** interact with people and the world. Your goal is to help **** remember what the robot felt, saw, and heard, and how the robot responded to those inputs.",
-        summary_command: str = "\nConsidering the new information, write an updated summary of the situation for ****. Emphasize information that **** needs to know to respond to people and situations in the best possible and most compelling way.",
+        io_provider,
+        client: Optional[object] = None,
+        system_prompt: str = (
+            "You are a helpful assistant that summarizes a succession of events and interactions "
+            "accurately and concisely. You are watching a robot named **** interact with people "
+            "and the world. Your goal is to help **** remember what the robot felt, saw, and heard, "
+            "and how the robot responded to those inputs."
+        ),
+        summary_command: str = (
+            "\nConsidering the new information, write an updated summary of the situation for ****. "
+            "Emphasize information that **** needs to know to respond to people and situations "
+            "in the best possible and most compelling way."
+        ),
     ):
         self.client = client
-
-        # configuration
         self.config = config
         self.agent_name = self.config.agent_name
         self.system_prompt = system_prompt.replace("****", self.agent_name)
         self.summary_command = summary_command.replace("****", self.agent_name)
-
-        # frame index
+        self._summary_task = None
+        self.history = []
+        self.io_provider = IOProvider()
         self.frame_index = 0
 
-        # task executor
-        self._summary_task: Optional[asyncio.Task] = None
-
-        # history buffer
-        self.history: List[ChatMessage] = []
-
-        # io provider
-        self.io_provider = IOProvider()
 
     async def summarize_messages(self, messages: List[ChatMessage]) -> ChatMessage:
         """
