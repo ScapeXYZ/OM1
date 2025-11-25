@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 import zenoh
 
+<<<<<<< HEAD
 from zenoh_msgs import (
     AIControlStatus,
     Pose,
@@ -11,6 +12,9 @@ from zenoh_msgs import (
     open_zenoh_session,
     prepare_header,
 )
+=======
+from zenoh_msgs import Pose, nav_msgs
+>>>>>>> upstream/main
 
 from .singleton import singleton
 from .zenoh_listener_provider import ZenohListenerProvider
@@ -25,19 +29,34 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
     def __init__(
         self,
         topic: str = "amcl_pose",
+<<<<<<< HEAD
         pose_tolerance: float = 0.2,
         yaw_tolerance: float = 0.1,
     ):
         """
         Initialize the AMCL Provider with a specific topic.
+=======
+        pose_tolerance: float = 0.4,
+        yaw_tolerance: float = 0.2,
+    ):
+        """
+        Initialize the AMCL Provider with a specific topic.
+
+>>>>>>> upstream/main
         Parameters
         ----------
         topic : str, optional
             The topic on which to subscribe for AMCL messages (default is "amcl").
         pose_tolerance : float, optional
+<<<<<<< HEAD
             The tolerance for pose covariance (default is 0.2).
         yaw_tolerance : float, optional
             The tolerance for yaw covariance (default is 0.1).
+=======
+            The tolerance for pose covariance (default is 0.4).
+        yaw_tolerance : float, optional
+            The tolerance for yaw covariance (default is 0.2).
+>>>>>>> upstream/main
         """
         super().__init__(topic)
         logging.info("AMCL Provider initialized with topic: %s", topic)
@@ -47,6 +66,7 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
         self.pose_tolerance = pose_tolerance
         self.yaw_tolerance = yaw_tolerance
 
+<<<<<<< HEAD
         self.topic = "robot/status/ai_control"
         self.session: Optional[zenoh.Session] = None
         self.pub = None
@@ -63,6 +83,12 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
     def amcl_message_callback(self, data: zenoh.Sample):
         """
         Process an incoming AMCL message.
+=======
+    def amcl_message_callback(self, data: zenoh.Sample):
+        """
+        Process an incoming AMCL message.
+
+>>>>>>> upstream/main
         Parameters
         ----------
         data : zenoh.Sample
@@ -73,7 +99,11 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
                 data.payload.to_bytes()
             )
             logging.debug("Received AMCL message: %s", message)
+<<<<<<< HEAD
             covariance = message.covariance
+=======
+            covariance = np.array(message.covariance)
+>>>>>>> upstream/main
 
             pos_uncertainty = np.sqrt(covariance[0] + covariance[7])
             yaw_uncertainty = np.sqrt(covariance[35])
@@ -89,11 +119,14 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
                 self.localization_pose,
             )
 
+<<<<<<< HEAD
             if self.pub is not None:
                 status_msg = AIControlStatus()
                 status_msg.header = prepare_header(message.header.frame_id)
                 status_msg.status = 0 if self.localization_status else 1
                 self.pub.put(status_msg.serialize())
+=======
+>>>>>>> upstream/main
         else:
             logging.warning("Received empty AMCL message")
 
@@ -112,6 +145,10 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
     def is_localized(self) -> bool:
         """
         Check if the robot is localized based on the AMCL data.
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/main
         Returns
         -------
         bool
@@ -123,6 +160,10 @@ class UnitreeGo2AMCLProvider(ZenohListenerProvider):
     def pose(self) -> Optional[Pose]:
         """
         Get the current localization pose.
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/main
         Returns
         -------
         Optional[Pose]

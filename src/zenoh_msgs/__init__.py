@@ -4,9 +4,19 @@ from .idl import (
     Accel,
     AccelWithCovariance,
     AccelWithCovarianceStamped,
+<<<<<<< HEAD
     AIControlStatus,
     AMCLPose,
     AudioStatus,
+=======
+    AIStatusRequest,
+    AIStatusResponse,
+    AMCLPose,
+    ASRText,
+    AudioStatus,
+    AvatarFaceRequest,
+    AvatarFaceResponse,
+>>>>>>> upstream/main
     BatteryState,
     CameraInfo,
     CameraStatus,
@@ -24,6 +34,11 @@ from .idl import (
     Header,
     Image,
     LaserScan,
+<<<<<<< HEAD
+=======
+    ModeStatusRequest,
+    ModeStatusResponse,
+>>>>>>> upstream/main
     Nav2Status,
     NavSatFix,
     NavSatStatus,
@@ -42,6 +57,11 @@ from .idl import (
     RegionOfInterest,
     String,
     Time,
+<<<<<<< HEAD
+=======
+    TTSStatusRequest,
+    TTSStatusResponse,
+>>>>>>> upstream/main
     Twist,
     TwistWithCovariance,
     TwistWithCovarianceStamped,
@@ -67,7 +87,19 @@ __all__ = [
     # status_msgs
     "AudioStatus",
     "CameraStatus",
+<<<<<<< HEAD
     "AIControlStatus",
+=======
+    "AIStatusRequest",
+    "AIStatusResponse",
+    "ASRText",
+    "AvatarFaceRequest",
+    "AvatarFaceResponse",
+    "ModeStatusRequest",
+    "ModeStatusResponse",
+    "TTSStatusRequest",
+    "TTSStatusResponse",
+>>>>>>> upstream/main
     # geographic_msgs
     "GeoPoint",
     "GeoPointStamped",

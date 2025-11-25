@@ -34,7 +34,23 @@ from .sensor_msgs import (
     PointField,
     RegionOfInterest,
 )
+<<<<<<< HEAD
 from .status_msgs import AIControlStatus, AudioStatus, CameraStatus
+=======
+from .status_msgs import (
+    AIStatusRequest,
+    AIStatusResponse,
+    ASRText,
+    AudioStatus,
+    AvatarFaceRequest,
+    AvatarFaceResponse,
+    CameraStatus,
+    ModeStatusRequest,
+    ModeStatusResponse,
+    TTSStatusRequest,
+    TTSStatusResponse,
+)
+>>>>>>> upstream/main
 from .std_msgs import ColorRGBA, Duration, Header, String, Time, prepare_header
 
 __all__ = [
@@ -48,7 +64,19 @@ __all__ = [
     # status_msgs
     "AudioStatus",
     "CameraStatus",
+<<<<<<< HEAD
     "AIControlStatus",
+=======
+    "AIStatusRequest",
+    "AIStatusResponse",
+    "ASRText",
+    "AvatarFaceRequest",
+    "AvatarFaceResponse",
+    "ModeStatusRequest",
+    "ModeStatusResponse",
+    "TTSStatusRequest",
+    "TTSStatusResponse",
+>>>>>>> upstream/main
     # geographic_msgs
     "GeoPoint",
     "GeoPointStamped",

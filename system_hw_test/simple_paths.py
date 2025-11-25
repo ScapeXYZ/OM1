@@ -25,7 +25,11 @@ class SimplePaths:
             current_time = time.time()
             lattency = current_time - msg_time
             logging.debug(f"Received paths with latency: {lattency:.6f} seconds")
+<<<<<<< HEAD
             logging.info(f"Received paths: {paths_msg.paths}")
+=======
+            logging.debug(f"Received paths: {paths_msg.paths}")
+>>>>>>> upstream/main
         except Exception as e:
             logging.error(f"Error processing paths: {e}")
 

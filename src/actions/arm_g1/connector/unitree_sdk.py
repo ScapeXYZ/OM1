@@ -28,6 +28,7 @@ class ARMUnitreeSDKConnector(ActionConnector[ArmInput]):
             logging.info("No action to perform, returning.")
             return
 
+<<<<<<< HEAD
         if output_interface.action == "left kiss":
             action_id = 12
 
@@ -51,4 +52,27 @@ class ARMUnitreeSDKConnector(ActionConnector[ArmInput]):
 
         logging.info(f"Executing action with ID: {action_id}")
 
+=======
+        action_id = None
+
+        if output_interface.action == "left kiss":
+            action_id = 12
+        elif output_interface.action == "right kiss":
+            action_id = 13
+        elif output_interface.action == "clap":
+            action_id = 17
+        elif output_interface.action == "high five":
+            action_id = 18
+        elif output_interface.action == "shake hand":
+            action_id = 27
+        elif output_interface.action == "heart":
+            action_id = 20
+        elif output_interface.action == "high wave":
+            action_id = 26
+        else:
+            logging.warning(f"Unknown action: {output_interface.action}")
+            return
+
+        logging.info(f"Executing action with ID: {action_id}")
+>>>>>>> upstream/main
         self.client.ExecuteAction(action_id)

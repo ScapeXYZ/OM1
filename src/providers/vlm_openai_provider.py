@@ -49,7 +49,11 @@ class VLMOpenAIProvider:
             ws.Client(url=stream_url) if stream_url else None
         )
         self.video_stream: VideoStream = VideoStream(
+<<<<<<< HEAD
             frame_callback=self._process_frame, fps=fps, device_index=camera_index
+=======
+            frame_callback=self._process_frame, fps=fps, device_index=camera_index  # type: ignore
+>>>>>>> upstream/main
         )
         self.message_callback: Optional[Callable] = None
 

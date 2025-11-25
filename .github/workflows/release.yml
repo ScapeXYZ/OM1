@@ -127,4 +127,8 @@ jobs:
               --tag $tag \
               openmindagi/om1@${{ needs.build-amd64.outputs.image-digest }} \
               openmindagi/om1@${{ needs.build-arm64.outputs.image-digest }}
+<<<<<<< HEAD
           done
+=======
+          done
+>>>>>>> upstream/main

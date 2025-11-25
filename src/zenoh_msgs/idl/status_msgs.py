@@ -1,6 +1,12 @@
 from dataclasses import dataclass
+<<<<<<< HEAD
 
 from pycdr2 import Enum, IdlStruct
+=======
+from enum import Enum
+
+from pycdr2 import IdlStruct
+>>>>>>> upstream/main
 from pycdr2.types import int8
 
 from .std_msgs import Header, String
@@ -37,6 +43,7 @@ class CameraStatus(IdlStruct, typename="CameraStatus"):
 
 
 @dataclass
+<<<<<<< HEAD
 class AIControlStatus(IdlStruct, typename="AIControlStatus"):
     class STATUS(Enum):
         DISABLED = 0
@@ -44,3 +51,109 @@ class AIControlStatus(IdlStruct, typename="AIControlStatus"):
 
     header: Header
     status: int8
+=======
+class AIStatusRequest(IdlStruct, typename="AIStatusRequest"):
+    class Code(Enum):
+        DISABLED = 0
+        ENABLED = 1
+        STATUS = 2
+
+    header: Header
+    request_id: String
+    code: int8
+
+
+@dataclass
+class AIStatusResponse(IdlStruct, typename="AIStatusResponse"):
+    class Code(Enum):
+        DISABLED = 0
+        ENABLED = 1
+        UNKNOWN = 2
+
+    header: Header
+    request_id: String
+    code: int8
+    status: String
+
+
+@dataclass
+class ModeStatusRequest(IdlStruct, typename="ModeStatusRequest"):
+    class Code(Enum):
+        SWITCH_MODE = 0
+        STATUS = 1
+
+    header: Header
+    request_id: String
+    code: int8
+    mode: String = String("")  # Target mode for SWITCH_MODE, ignored for STATUS
+
+
+@dataclass
+class ModeStatusResponse(IdlStruct, typename="ModeStatusResponse"):
+    class Code(Enum):
+        SUCCESS = 0
+        FAILURE = 1
+        UNKNOWN = 2
+
+    header: Header
+    request_id: String
+    code: int8
+    current_mode: String
+    message: String
+
+
+@dataclass
+class TTSStatusRequest(IdlStruct, typename="TTSStatusRequest"):
+    class Code(Enum):
+        DISABLED = 0
+        ENABLED = 1
+        STATUS = 2
+
+    header: Header
+    request_id: String
+    code: int8
+
+
+@dataclass
+class TTSStatusResponse(IdlStruct, typename="TTSStatusResponse"):
+    class Code(Enum):
+        DISABLED = 0
+        ENABLED = 1
+        UNKNOWN = 2
+
+    header: Header
+    request_id: String
+    code: int8
+    status: String
+
+
+@dataclass
+class ASRText(IdlStruct, typename="ASRText"):
+    header: Header
+    text: str
+
+
+@dataclass
+class AvatarFaceRequest(IdlStruct, typename="AvatarFaceRequest"):
+    class Code(Enum):
+        SWITCH_FACE = 0
+        STATUS = 1
+
+    header: Header
+    request_id: String
+    code: int8
+    face_text: String
+
+
+@dataclass
+class AvatarFaceResponse(IdlStruct, typename="AvatarFaceResponse"):
+    class Code(Enum):
+        ACTIVE = 0
+        INACTIVE = 1
+        UNKNOWN = 2
+
+    header: Header
+    request_id: String
+    code: int8
+    message: String
+>>>>>>> upstream/main

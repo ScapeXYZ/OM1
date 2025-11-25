@@ -8,7 +8,11 @@ class LLMFunction:
     Decorator to mark methods as LLM-callable functions.
     """
 
+<<<<<<< HEAD
     def __init__(self, description: str, name: str = None):
+=======
+    def __init__(self, description: str, name: T.Optional[str] = None):
+>>>>>>> upstream/main
         """
         Initialize the LLM function decorator.
         Parameters
@@ -67,7 +71,11 @@ class FunctionGenerator:
         return type_mapping.get(python_type, {"type": "string"})
 
     @staticmethod
+<<<<<<< HEAD
     def extract_function_schema(method: callable) -> T.Dict:
+=======
+    def extract_function_schema(method: T.Callable) -> T.Dict:
+>>>>>>> upstream/main
         """
         Extract OpenAI function schema from a method.
         Parameters
@@ -100,12 +108,23 @@ class FunctionGenerator:
             properties[param_name] = param_schema
 
             if param.default == inspect.Parameter.empty:
+<<<<<<< HEAD
                 if get_origin(param_type) is T.Union and type(None) in get_args(
                     param_type
                 ):
                     pass
                 else:
                     required.append(param_name)
+=======
+                required.append(param_name)
+            else:
+                required.append(param_name)
+                if isinstance(param_type, str) and param.default == "":
+                    param_schema["description"] = (
+                        param_schema.get("description", f"Parameter {param_name}")
+                        + " (optional - can be empty string)"
+                    )
+>>>>>>> upstream/main
 
         return {
             "type": "function",
@@ -116,17 +135,31 @@ class FunctionGenerator:
                     "type": "object",
                     "properties": properties,
                     "required": required,
+<<<<<<< HEAD
                 },
+=======
+                    "additionalProperties": False,
+                },
+                "strict": True,
+>>>>>>> upstream/main
             },
         }
 
     @staticmethod
+<<<<<<< HEAD
     def generate_functions_from_class(cls: T.Type) -> T.Dict:
+=======
+    def generate_functions_from_class(cls_instance: T.Type) -> T.Dict:
+>>>>>>> upstream/main
         """
         Generate all function schemas from a class with decorated methods.
         Parameters
         ----------
+<<<<<<< HEAD
         cls : type
+=======
+        cls_instance : type
+>>>>>>> upstream/main
             The class to extract function schemas from.
         Returns
         -------
@@ -135,9 +168,19 @@ class FunctionGenerator:
         """
         functions = {}
 
+<<<<<<< HEAD
         for _, method in inspect.getmembers(cls, predicate=inspect.ismethod):
             if hasattr(method, "_llm_function") and method._llm_function:
                 function_schema = FunctionGenerator.extract_function_schema(method)
                 functions[method._llm_name] = function_schema
+=======
+        for _, method in inspect.getmembers(cls_instance, predicate=inspect.ismethod):
+            if (
+                hasattr(method.__func__, "_llm_function")
+                and method.__func__._llm_function
+            ):
+                function_schema = FunctionGenerator.extract_function_schema(method)
+                functions[method.__func__._llm_name] = function_schema
+>>>>>>> upstream/main
 
         return functions

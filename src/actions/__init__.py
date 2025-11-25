@@ -58,6 +58,7 @@ def load_action(action_config: Dict[str, Union[str, Dict[str, str]]]) -> AgentAc
         connector = importlib.import_module(
             f"actions.{action_config['name']}.connector.{action_config['connector']}"
         )
+<<<<<<< HEAD
         for _, obj in connector.__dict__.items():                     # ⬅ FIXED indentation!
             if isinstance(obj, type) and issubclass(obj, ActionConnector):
                 connector_class = obj
@@ -72,9 +73,17 @@ def load_action(action_config: Dict[str, Union[str, Dict[str, str]]]) -> AgentAc
     exclude_from_prompt = action_config.get("exclude_from_prompt", False)
 
     print(f"🟢 [DEBUG] Action loaded successfully: {action_config['name']}")
+=======
+    config = ActionConfig(**action_config.get("config", {}))  # type: ignore
+
+    exclude_from_prompt = False
+    if "exclude_from_prompt" in action_config:
+        exclude_from_prompt = bool(action_config["exclude_from_prompt"])
+
+>>>>>>> upstream/main
     return AgentAction(
-        name=action_config["name"],
-        llm_label=action_config["llm_label"],
+        name=action_config["name"],  # type: ignore
+        llm_label=action_config["llm_label"],  # type: ignore
         interface=interface,
         connector=connector_class(config) if connector_class else None,
         exclude_from_prompt=exclude_from_prompt,

@@ -3,7 +3,11 @@ import multiprocessing as mp
 import threading
 import time
 from queue import Empty, Full
+<<<<<<< HEAD
 from typing import Dict, List, Optional
+=======
+from typing import Dict, List, Optional, Union
+>>>>>>> upstream/main
 
 import zenoh
 
@@ -101,8 +105,15 @@ class SimplePathsProvider:
         self.data_queue = mp.Queue(maxsize=5)
         self.control_queue = mp.Queue()
 
+<<<<<<< HEAD
         self._simple_paths_processor_thread = None
         self._simple_paths_derived_thread = None
+=======
+        # Thread control
+        self._simple_paths_processor_thread = None
+        self._simple_paths_derived_thread = None
+        self._stop_event = threading.Event()
+>>>>>>> upstream/main
 
     def start(self):
         """
@@ -134,6 +145,11 @@ class SimplePathsProvider:
         """
         Stop the SimplePathsProvider by closing the Zenoh session.
         """
+<<<<<<< HEAD
+=======
+        self._stop_event.set()
+
+>>>>>>> upstream/main
         if self._simple_paths_processor_thread:
             self.control_queue.put("STOP")
             self._simple_paths_processor_thread.join()
@@ -147,7 +163,11 @@ class SimplePathsProvider:
         """
         Process paths data from the data queue and generate movement options.
         """
+<<<<<<< HEAD
         while True:
+=======
+        while not self._stop_event.is_set():
+>>>>>>> upstream/main
             try:
                 paths = self.data_queue.get_nowait()
 
@@ -232,7 +252,11 @@ class SimplePathsProvider:
         return self._lidar_string
 
     @property
+<<<<<<< HEAD
     def movement_options(self) -> Dict[str, List[int]]:
+=======
+    def movement_options(self) -> Dict[str, Union[List[int], bool]]:
+>>>>>>> upstream/main
         """
         Get the movement options based on the current valid paths.
 

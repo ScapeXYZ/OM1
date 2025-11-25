@@ -1,6 +1,11 @@
 import logging
 import math
 
+<<<<<<< HEAD
+=======
+import zenoh
+
+>>>>>>> upstream/main
 from zenoh_msgs import open_zenoh_session, sensor_msgs
 
 from .singleton import singleton
@@ -52,12 +57,17 @@ class D435Provider:
 
         return angle_degrees, distance
 
+<<<<<<< HEAD
     def obstacle_callback(self, msg: sensor_msgs.PointCloud):
+=======
+    def obstacle_callback(self, sample: zenoh.Sample):
+>>>>>>> upstream/main
         """
         Callback function to process the obstacle point cloud data.
 
         Parameters:
         ----------
+<<<<<<< HEAD
         msg : sensor_msgs.PointCloud
             The message containing the point cloud data.
         """
@@ -66,6 +76,16 @@ class D435Provider:
 
             obstacles = []
             for pt in points.points:
+=======
+        sample : zenoh.Sample
+            The sample containing the point cloud data.
+        """
+        try:
+            points = sensor_msgs.PointCloud.deserialize(sample.payload.to_bytes())
+
+            obstacles = []
+            for pt in points.points:  # type: ignore
+>>>>>>> upstream/main
                 x = pt.x
                 y = pt.y
                 z = pt.z
@@ -97,5 +117,12 @@ class D435Provider:
             return
 
         self.running = False
+<<<<<<< HEAD
         self.session.close()
+=======
+
+        if self.session:
+            self.session.close()
+
+>>>>>>> upstream/main
         logging.info("D435Provider stopped and Zenoh session closed")
