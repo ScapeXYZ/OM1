@@ -15,11 +15,6 @@ from providers.io_provider import IOProvider
 class WalletCoinbaseConfig(SensorConfig):
     """
     Configuration for Wallet Coinbase Sensor.
-
-    Parameters
-    ----------
-    asset_id : str
-        Asset ID to query.
     """
 
     asset_id: str = Field(default="eth", description="Asset ID to query")
@@ -31,87 +26,77 @@ class WalletCoinbase(FuserInput[WalletCoinbaseConfig, List[float]]):
     """
 
     def __init__(self, config: WalletCoinbaseConfig):
-        """
-        Initialize the WalletCoinbase input handler.
-
-        Sets up the required providers and buffers for handling Coinbase wallet data.
-        Fetches the initial wallet balance.
-
-        Parameters
-        ----------
-        config : WalletCoinbaseConfig
-            Configuration for the sensor input, specifying the asset ID to query.
-        """
         super().__init__(config)
 
         self.asset_id = self.config.asset_id
-
-        # Track IO
         self.io_provider = IOProvider()
         self.messages: List[Message] = []
 
-        self.POLL_INTERVAL = 0.5  # seconds between blockchain data updates
+        self.POLL_INTERVAL = 0.5
         self.COINBASE_WALLET_ID = os.environ.get("COINBASE_WALLET_ID")
-        if self.COINBASE_WALLET_ID:
-            logging.info("Coinbase wallet ID configured successfully")
-        else:
-            logging.warning("COINBASE_WALLET_ID environment variable not set")
 
-        # Initialize Wallet
-        # TODO(Kyle): Create Wallet if the wallet ID is not found
-        # TODO(Kyle): Support importing other wallets, following https://docs.cdp.coinbase.com/mpc-wallet/docs/wallets#importing-a-wallet
+        if self.COINBASE_WALLET_ID:
+            logging.info("Coinbase wallet ID configured")
+        else:
+            logging.warning("COINBASE_WALLET_ID not set")
+
         API_KEY = os.environ.get("COINBASE_API_KEY")
         API_SECRET = os.environ.get("COINBASE_API_SECRET")
+
+        api_keys_present = False
         if not API_KEY or not API_SECRET:
             logging.error(
                 "COINBASE_API_KEY or COINBASE_API_SECRET environment variable is not set"
             )
         else:
             Cdp.configure(API_KEY, API_SECRET)
+            api_keys_present = True
 
         try:
-            # fetch wallet data
-            if not self.COINBASE_WALLET_ID:
-                raise ValueError("COINBASE_WALLET_ID environment variable is not set")
+            if self.COINBASE_WALLET_ID:
+                self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)
+                logging.info(f"Wallet loaded: {self.wallet}")
 
-            self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)
-            logging.info(f"Wallet: {self.wallet}")
+            elif api_keys_present:
+                logging.info(
+                    "COINBASE_WALLET_ID not provided. Creating new Coinbase wallet..."
+                )
+                self.wallet = Wallet.create()
+                logging.warning(
+                    f"NEW WALLET CREATED! ID: {self.wallet.id}\n"
+                    "Set COINBASE_WALLET_ID to persist this wallet."
+                )
 
-            self.balance = float(self.wallet.balance(self.asset_id))
+            else:
+                raise ValueError(
+                    "Cannot initialize wallet: missing wallet ID and API keys"
+                )
+
+            self.balance = float(self.wallet.balance(self.asset_id))  # type: ignore
             self.balance_previous = self.balance
+
         except Exception as e:
-            logging.error(f"Error fetching Coinbase Wallet data: {e}")
+            logging.error(f"Failed to initialize Coinbase wallet: {e}")
             self.wallet = None
             self.balance = 0.0
             self.balance_previous = 0.0
 
-        logging.info("Testing: WalletCoinbase: Initialized")
+        logging.info("WalletCoinbase initialized")
 
     async def _poll(self) -> List[float]:
-        """
-        Poll for Coinbase Wallet balance updates.
-
-        Returns
-        -------
-        List[float]
-            [current_balance, balance_change]
-        """
         await asyncio.sleep(self.POLL_INTERVAL)
 
-        # randomly simulate ETH inbound transfers for debugging purposes
-        # if random.randint(0, 10) > 7:
-        #     faucet_transaction = self.wallet.faucet(asset_id='eth')
-        #     faucet_transaction.wait()
-        #     logging.info(f"WalletCoinbase: Faucet transaction: {faucet_transaction}")
+        if not self.wallet or not self.COINBASE_WALLET_ID:
+            return [self.balance, 0.0]
 
         try:
-            self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)  # type: ignore
-            logging.info(
-                f"WalletCoinbase: Wallet refreshed: {self.wallet.balance(self.asset_id)}, the current balance is {self.balance}"
-            )
-            self.balance = float(self.wallet.balance(self.asset_id))
-            balance_change = self.balance - self.balance_previous
-            self.balance_previous = self.balance
+            self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)
+            new_balance = float(self.wallet.balance(self.asset_id))
+            balance_change = new_balance - self.balance_previous
+
+            self.balance_previous = new_balance
+            self.balance = new_balance
+
         except Exception as e:
             logging.error(f"Error refreshing wallet data: {e}")
             balance_change = 0.0
@@ -119,80 +104,44 @@ class WalletCoinbase(FuserInput[WalletCoinbaseConfig, List[float]]):
         return [self.balance, balance_change]
 
     async def _raw_to_text(self, raw_input: List[float]) -> Optional[Message]:
-        """
-        Convert balance data to human-readable message.
-
-        Parameters
-        ----------
-        raw_input : List[float]
-            [current_balance, balance_change]
-
-        Returns
-        -------
-        Message
-            Timestamped status or transaction notification
-        """
         balance_change = raw_input[1]
 
-        message = ""
-
-        if balance_change > 0:
-            message = f"{balance_change:.5f}"
-            logging.info(f"\n\nWalletCoinbase balance change: {message}")
-        else:
+        if balance_change <= 0:
             return None
 
-        logging.debug(f"WalletCoinbase: {message}")
-        return Message(timestamp=time.time(), message=message)
+        return Message(
+            timestamp=time.time(),
+            message=f"{balance_change:.5f}",
+        )
 
     async def raw_to_text(self, raw_input: List[float]):
-        """
-        Process balance update and manage message buffer.
-
-        Parameters
-        ----------
-        raw_input : List[float]
-            Raw balance data
-        """
         pending_message = await self._raw_to_text(raw_input)
-
-        if pending_message is not None:
+        if pending_message:
             self.messages.append(pending_message)
 
     def formatted_latest_buffer(self) -> Optional[str]:
-        """
-        Format and clear the buffer contents. If there are multiple transactions,
-        combine them into a single message.
-
-        Returns
-        -------
-        Optional[str]
-            Formatted string of buffer contents or None if buffer is empty
-        """
-        if len(self.messages) == 0:
+        if not self.messages:
             return None
 
-        transaction_sum = 0
-
-        # all the messages, by definition, are non-zero
-        for message in self.messages:
-            transaction_sum += float(message.message)
-
+        total_received = sum(float(msg.message) for msg in self.messages)
         last_message = self.messages[-1]
+
         result_message = Message(
             timestamp=last_message.timestamp,
-            message=f"You just received {transaction_sum:.5f} {self.asset_id.upper()}.",
+            message=f"You just received {total_received:.5f} {self.asset_id.upper()}.",
         )
 
-        result = f"""
+        self.io_provider.add_input(
+            self.__class__.__name__,
+            result_message.message,
+            result_message.timestamp,
+        )
+
+        self.messages.clear()
+
+        return f"""
 {self.__class__.__name__} INPUT
 // START
 {result_message.message}
 // END
 """
-
-        self.io_provider.add_input(
-            self.__class__.__name__, result_message.message, result_message.timestamp
-        )
-        self.messages = []
-        return result
